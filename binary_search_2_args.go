@@ -14,7 +14,7 @@ func main() {
 	fmt.Printf("The key is: %v\n", os.Args[len(os.Args)-1])
 	fmt.Printf("Because s is a slice of strings we need to convert it to a slice of int\n")
 
-	var s []int
+	s := make([]int, 0, len(os.Args[len(os.Args)-1]))
 
 	key, err := strconv.Atoi(os.Args[len(os.Args)-1])
 	if err != nil {
