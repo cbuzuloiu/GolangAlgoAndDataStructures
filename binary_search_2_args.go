@@ -27,10 +27,41 @@ func main() {
 		intArg, err := strconv.Atoi(arg)
 		if err != nil {
 			log.Fatal("Failed to convert string to integer ", err)
+			continue
 		}
 
 		s = append(s, intArg)
 	}
 
 	fmt.Printf("s = %v\n", s)
+
+	targetValue := binarySearch(s, key)
+
+	if targetValue == -1 {
+		fmt.Println("The target value is not in the array")
+	} else {
+		fmt.Printf("The target value is at position: %d\n", targetValue)
+	}
+}
+
+func binarySearch(s []int, key int) int {
+	low := 0
+	high := len(s) - 1
+
+	for low <= high {
+		med := (low + high) / 2
+
+		switch {
+		case s[med] == key:
+			return med
+		case s[med] < key:
+			low = med + 1
+		case s[med] > key:
+			high = med - 1
+		default:
+			return -1
+		}
+	}
+
+	return -1
 }
