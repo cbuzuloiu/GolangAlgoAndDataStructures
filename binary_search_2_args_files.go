@@ -16,7 +16,7 @@ func main() {
 
 	testDataFiles := os.Args[1:]
 
-	fmt.Println(testDataFiles)
+	fmt.Printf("Data files: %v\n", testDataFiles)
 
 	for _, file := range testDataFiles {
 		f, err := os.Open(file)
@@ -37,7 +37,9 @@ func main() {
 		for scanner.Scan() {
 			// stringToIntSlice(scanner.Text())
 			data := worker(scanner.Text(), file)
-			fmt.Println(data)
+			fmt.Println("---- **** ----")
+			fmt.Printf("For file name: %v\nNr Crt: %d\nThe data Slice is: %v\nThe target Key is: %d\nThe index of the target is: %d\n", data.FileName, data.NrCrt, data.DataSlice, data.Key, data.IndexOfTarget)
+			fmt.Println("---- **** ----")
 		}
 	}
 }
