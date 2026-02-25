@@ -36,9 +36,9 @@ func main() {
 			continue
 		}
 
-		dataResult := make(chan DataStruct)
+		dataResult := make(chan *DataStruct)
 		nrOfWorkeres := 0
-		var receivedDataSlice []DataStruct
+		var receivedDataSlice []*DataStruct
 
 		for scanner.Scan() {
 			// stringToIntSlice(scanner.Text())
@@ -59,6 +59,12 @@ func main() {
 		}
 
 		fmt.Println(receivedDataSlice)
+
+		for _, result := range receivedDataSlice {
+			fmt.Println("---- **** ----")
+			fmt.Printf("For file name: %v\nNr Crt: %d\nThe data Slice is: %v\nThe target Key is: %d\nThe index of the target is: %d\n", result.FileName, result.NrCrt, result.DataSlice, result.Key, result.IndexOfTarget)
+			fmt.Println("---- **** ----")
+		}
 	}
 	fmt.Println(time.Since(start).Seconds())
 }
@@ -71,7 +77,7 @@ type DataStruct struct {
 	IndexOfTarget int    `json:"IndexOfTarget"`
 }
 
-func workerGorutine(data string, fileName string, ch chan<- DataStruct) {
+func workerGorutine(data string, fileName string, ch chan<- *DataStruct) {
 	s := stringToIntSlice(data)
 
 	key := s[len(s)-1]
@@ -85,7 +91,7 @@ func workerGorutine(data string, fileName string, ch chan<- DataStruct) {
 		fmt.Printf("Nr Crt: %d\n", nrCrt)
 	*/
 
-	dataStruct := DataStruct{
+	dataStruct := &DataStruct{
 		FileName:  fileName,
 		Key:       key,
 		DataSlice: dataS,
