@@ -33,16 +33,32 @@ func main() {
 		// We scan once to advance the cursor past the first line
 		if !scanner.Scan() {
 			// If this fails the input is empty
-			return
+			continue
 		}
+
+		dataResult := make(chan DataStruct)
+		nrOfWorkeres := 0
+		var receivedDataSlice []DataStruct
 
 		for scanner.Scan() {
 			// stringToIntSlice(scanner.Text())
-			data := worker(scanner.Text(), file)
-			fmt.Println("---- **** ----")
-			fmt.Printf("For file name: %v\nNr Crt: %d\nThe data Slice is: %v\nThe target Key is: %d\nThe index of the target is: %d\n", data.FileName, data.NrCrt, data.DataSlice, data.Key, data.IndexOfTarget)
-			fmt.Println("---- **** ----")
+			go workerGorutine(scanner.Text(), file, dataResult)
+			nrOfWorkeres++
+			/*
+				fmt.Printf("%T", dataResult)
+				receivedData := <-dataResult
+				fmt.Println("---- **** ----")
+				fmt.Printf("For file name: %v\nNr Crt: %d\nThe data Slice is: %v\nThe target Key is: %d\nThe index of the target is: %d\n", receivedData.FileName, receivedData.NrCrt, receivedData.DataSlice, receivedData.Key, receivedData.IndexOfTarget)
+				fmt.Println("---- **** ----")
+			*/
 		}
+
+		for i := 0; i < nrOfWorkeres; i++ {
+			// receivedData := <-dataResult
+			receivedDataSlice = append(receivedDataSlice, <-dataResult)
+		}
+
+		fmt.Println(receivedDataSlice)
 	}
 	fmt.Println(time.Since(start).Seconds())
 }
@@ -55,7 +71,7 @@ type DataStruct struct {
 	IndexOfTarget int    `json:"IndexOfTarget"`
 }
 
-func worker(data string, fileName string) *DataStruct {
+func workerGorutine(data string, fileName string, ch chan<- DataStruct) {
 	s := stringToIntSlice(data)
 
 	key := s[len(s)-1]
@@ -69,7 +85,7 @@ func worker(data string, fileName string) *DataStruct {
 		fmt.Printf("Nr Crt: %d\n", nrCrt)
 	*/
 
-	dataStruct := &DataStruct{
+	dataStruct := DataStruct{
 		FileName:  fileName,
 		Key:       key,
 		DataSlice: dataS,
@@ -88,7 +104,7 @@ func worker(data string, fileName string) *DataStruct {
 		fmt.Println(string(pData))
 	*/
 
-	return dataStruct
+	ch <- dataStruct
 }
 
 func stringToIntSlice(data string) []int {
